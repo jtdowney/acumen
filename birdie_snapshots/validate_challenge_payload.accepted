@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: validate challenge payload
+file: ./test/acumen/validate_challenge_test.gleam
+test_name: build_payload_snapshot_test
+---
+{}

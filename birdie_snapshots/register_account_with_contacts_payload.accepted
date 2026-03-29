@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: register account with contacts payload
+file: ./test/acumen/register_account_test.gleam
+test_name: build_with_contacts_payload_snapshot_test
+---
+{"contact":["mailto:admin@example.com"]}

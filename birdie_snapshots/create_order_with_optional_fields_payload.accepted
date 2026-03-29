@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: create order with optional fields payload
+file: ./test/acumen/create_order_test.gleam
+test_name: build_with_optional_fields_payload_snapshot_test
+---
+{"identifiers":[{"type":"dns","value":"example.com"}],"notBefore":"2024-01-01T00:00:00Z","notAfter":"2024-12-31T23:59:59Z","profile":"tlsserver"}

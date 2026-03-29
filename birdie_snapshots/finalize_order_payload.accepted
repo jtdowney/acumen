@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: finalize order payload
+file: ./test/acumen/finalize_order_test.gleam
+test_name: build_payload_snapshot_test
+---
+{"csr":"ZmFrZS1jc3ItZGVyLWJ5dGVz"}

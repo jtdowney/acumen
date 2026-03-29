@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: create order single identifier payload
+file: ./test/acumen/create_order_test.gleam
+test_name: build_single_identifier_payload_snapshot_test
+---
+{"identifiers":[{"type":"dns","value":"example.com"}]}

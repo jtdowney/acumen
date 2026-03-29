@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: deactivate authorization payload
+file: ./test/acumen/deactivate_authorization_test.gleam
+test_name: build_payload_snapshot_test
+---
+{"status":"deactivated"}

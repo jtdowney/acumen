@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: create order with replaces payload
+file: ./test/acumen/create_order_test.gleam
+test_name: build_with_replaces_payload_snapshot_test
+---
+{"identifiers":[{"type":"dns","value":"example.com"}],"replaces":"aYhba4dGQEHPTBhac0U2nY0.AAABkNRR7v4"}

@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: register account with only existing payload
+file: ./test/acumen/register_account_test.gleam
+test_name: build_with_only_existing_payload_snapshot_test
+---
+{"onlyReturnExisting":true}

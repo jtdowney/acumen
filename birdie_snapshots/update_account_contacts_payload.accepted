@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: update account contacts payload
+file: ./test/acumen/update_account_test.gleam
+test_name: build_contacts_payload_snapshot_test
+---
+{"contact":["mailto:new-admin@example.com"]}

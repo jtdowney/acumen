@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: revoke certificate with reason payload
+file: ./test/acumen/revoke_certificate_test.gleam
+test_name: build_includes_reason_when_set_test
+---
+{"reason":1,"certificate":"MIIBAA"}

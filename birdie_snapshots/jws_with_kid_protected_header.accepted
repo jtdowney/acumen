@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: JWS with kid protected header
+file: ./test/acumen/internal/jws_test.gleam
+test_name: sign_with_kid_protected_header_snapshot_test
+---
+{"alg":"ES256","kid":"https://example.com/acct/123","nonce":"test-nonce-value","url":"https://example.com/acme/new-order"}

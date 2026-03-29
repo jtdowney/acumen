@@ -1,0 +1,62 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  check-format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "28"
+          gleam-version: "1.15.2"
+          rebar3-version: "3"
+      - run: gleam deps download
+      - run: gleam format --check src test
+
+  test-erlang:
+    name: Test (OTP ${{ matrix.otp-version }} / Gleam ${{ matrix.gleam-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        otp-version: ["27", "28"]
+        gleam-version: ["1.14.0", "1.15.2"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp-version }}
+          gleam-version: ${{ matrix.gleam-version }}
+          rebar3-version: "3"
+      - run: gleam deps download
+      - run: gleam test --target erlang
+
+  test-integration:
+    name: Integration
+    needs: test-erlang
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "28"
+          gleam-version: "1.15.2"
+          rebar3-version: "3"
+      - run: gleam deps download
+      - run: docker compose up -d
+      - name: Wait for Pebble
+        run: |
+          for i in $(seq 1 30); do
+            curl -sk https://localhost:14000/dir > /dev/null 2>&1 && exit 0
+            sleep 1
+          done
+          echo "Pebble failed to start" && exit 1
+      - run: gleam test --target erlang -- --tag integration
+      - run: docker compose down
+        if: always()

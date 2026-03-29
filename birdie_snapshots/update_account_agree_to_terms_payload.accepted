@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: update account agree to terms payload
+file: ./test/acumen/update_account_test.gleam
+test_name: build_agree_to_terms_payload_snapshot_test
+---
+{"termsOfServiceAgreed":true}

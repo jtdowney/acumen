@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: revoke certificate payload
+file: ./test/acumen/revoke_certificate_test.gleam
+test_name: build_encodes_certificate_as_base64url_test
+---
+{"certificate":"MIIBAA"}

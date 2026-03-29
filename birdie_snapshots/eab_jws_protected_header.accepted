@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: EAB JWS protected header
+file: ./test/acumen/internal/jws_test.gleam
+test_name: sign_eab_creates_valid_jws_structure_test
+---
+{"alg":"HS256","kid":"test-key-id","url":"https://example.com/acme/new-account"}

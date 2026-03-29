@@ -1,0 +1,7 @@
+---
+version: 1.5.4
+title: update account deactivate payload
+file: ./test/acumen/update_account_test.gleam
+test_name: build_deactivate_payload_snapshot_test
+---
+{"status":"deactivated"}
