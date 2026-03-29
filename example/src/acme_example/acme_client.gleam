@@ -678,16 +678,15 @@ fn wait_for_dns_propagation(
   expected_value: String,
   attempts: Int,
 ) -> Nil {
-  use <- bool.guard(
+  use <- bool.lazy_guard(
     when: dns_record_exists(record_name, expected_value),
-    return: io.println("  DNS TXT record verified"),
+    return: fn() { io.println("  DNS TXT record verified") },
   )
-  use <- bool.guard(
-    when: attempts >= 60,
-    return: io.println(
+  use <- bool.lazy_guard(when: attempts >= 60, return: fn() {
+    io.println(
       "  WARNING: DNS record not detected after 5 minutes, proceeding anyway",
-    ),
-  )
+    )
+  })
   case attempts {
     0 ->
       io.println("  Waiting for DNS propagation (checking every 5 seconds)...")
