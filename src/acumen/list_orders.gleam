@@ -31,7 +31,6 @@ import gleam/json
 import gleam/list
 import gleam/option.{type Option}
 import gleam/result
-import gleam/string
 
 /// A paginated list of order URLs from the ACME server.
 pub type OrdersList {
@@ -106,11 +105,6 @@ fn parse_orders_response(
 
 fn parse_next_link(resp: Response(String)) -> Result(Url, Nil) {
   resp.headers
-  |> list.find_map(fn(header) {
-    let #(name, value) = header
-    case string.lowercase(name) == "link" {
-      True -> link_header.find_by_rel(value, rel: "next")
-      False -> Error(Nil)
-    }
-  })
+  |> list.key_filter("link")
+  |> list.find_map(link_header.find_by_rel(_, rel: "next"))
 }

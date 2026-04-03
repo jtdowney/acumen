@@ -16,9 +16,9 @@ pub fn find_by_rel(header: String, rel rel: String) -> Result(url.Url, Nil) {
 }
 
 fn has_rel(parameters: List(#(String, String)), rel: String) -> Bool {
-  list.any(parameters, fn(param) {
-    param.0 == "rel" && list.contains(string.split(param.1, " "), rel)
-  })
+  parameters
+  |> list.key_filter("rel")
+  |> list.any(fn(value) { list.contains(string.split(value, " "), rel) })
 }
 
 fn parse_link_header(header: String) -> Result(List(LinkHeader), Nil) {

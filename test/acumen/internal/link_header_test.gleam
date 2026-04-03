@@ -92,6 +92,14 @@ pub fn handles_multiple_rels_finds_first_match_test() {
   assert url == expected
 }
 
+pub fn handles_repeated_rel_params_test() {
+  let input = "<https://example.com/>; rel=\"prev\"; rel=\"next\""
+
+  let assert Ok(url) = link_header.find_by_rel(input, rel: "next")
+  let assert Ok(expected) = url.from_string("https://example.com/")
+  assert url == expected
+}
+
 pub fn returns_error_for_invalid_uri_test() {
   let input = "<:not-a-valid-uri>; rel=\"next\""
 
