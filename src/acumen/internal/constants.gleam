@@ -1,1 +1,1 @@
-pub const version = "1.0.0"
+pub const version = "1.1.1"
