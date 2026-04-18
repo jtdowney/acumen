@@ -13,7 +13,7 @@ import gleam/option.{type Option}
 import gleam/result
 import gleam/string
 import gleam/time/timestamp.{type Timestamp}
-import gose/jwk
+import gose/jose/jwk
 import kryptos/crypto
 import kryptos/hash
 import thirtytwo

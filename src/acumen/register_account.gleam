@@ -9,11 +9,11 @@
 //// import acumen
 //// import acumen/account.{type Account}
 //// import acumen/register_account
-//// import gose/jwk
+//// import gose/key
 //// import kryptos/ec
 ////
 //// // Generate an account key (store this securely!)
-//// let key = jwk.generate_ec(ec.P256)
+//// let key = key.generate_ec(ec.P256)
 //// let unregistered = acumen.UnregisteredKey(key)
 ////
 //// // Build the registration request
@@ -43,7 +43,8 @@ import gleam/http/response.{type Response}
 import gleam/json
 import gleam/option.{type Option}
 import gleam/result
-import gose/jwk
+import gose
+import gose/jose/jwk
 
 /// Request builder for account registration.
 ///
@@ -128,7 +129,7 @@ fn build_eab_jws(
   key: acumen.UnregisteredKey,
 ) -> Result(Option(json.Json), acumen.AcmeError) {
   use public_key <- result.try(
-    jwk.public_key(key.jwk)
+    gose.public_key(key.jwk)
     |> result.map_error(fn(e) { acumen.JwsError(utils.gose_error_to_string(e)) }),
   )
   let jwk_json = jwk.to_json(public_key)

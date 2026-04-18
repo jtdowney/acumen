@@ -11,7 +11,7 @@ import gleam/order as ord
 import gleam/result
 import gleam/string
 import gleam/time/timestamp
-import gose/jwk
+import gose/jose/jwk
 import integration/helpers
 import kryptos/x509/certificate
 import unitest
@@ -226,7 +226,7 @@ fn is_processing_or_valid(status: order.Status) -> Bool {
 
 fn issue_certificate_with_key(
   domain: String,
-) -> #(BitArray, jwk.Jwk, acumen.RegisteredKey, acumen.Context) {
+) -> #(BitArray, jwk.Key, acumen.RegisteredKey, acumen.Context) {
   let #(_account, registered_key, ctx) = helpers.setup_registered_account()
 
   let #(ready_order, ctx) =

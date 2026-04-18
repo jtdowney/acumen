@@ -6,7 +6,7 @@ import gleam/http
 import gleam/http/request
 import gleam/json
 import gleam/list
-import gose/jwk
+import gose
 import kryptos/ec
 import support/fixtures
 
@@ -90,7 +90,7 @@ pub fn build_encodes_all_revocation_reason_codes_test() {
 
 pub fn build_with_certificate_key_creates_post_test() {
   let ctx = fixtures.test_context()
-  let cert_key = jwk.generate_ec(ec.P256)
+  let cert_key = gose.generate_ec(ec.P256)
   let der_bytes = <<48, 130, 1, 0>>
   let builder = revoke_certificate.request(der_bytes)
 
@@ -107,7 +107,7 @@ pub fn build_with_certificate_key_creates_post_test() {
 
 pub fn build_with_certificate_key_encodes_payload_test() {
   let ctx = fixtures.test_context()
-  let cert_key = jwk.generate_ec(ec.P256)
+  let cert_key = gose.generate_ec(ec.P256)
   let der_bytes = <<48, 130, 1, 0>>
   let builder = revoke_certificate.request(der_bytes)
 
@@ -120,7 +120,7 @@ pub fn build_with_certificate_key_encodes_payload_test() {
 
 pub fn build_with_certificate_key_uses_jwk_header_test() {
   let ctx = fixtures.test_context()
-  let cert_key = jwk.generate_ec(ec.P256)
+  let cert_key = gose.generate_ec(ec.P256)
   let der_bytes = <<48, 130, 1, 0>>
   let builder = revoke_certificate.request(der_bytes)
 

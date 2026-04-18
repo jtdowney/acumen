@@ -15,7 +15,8 @@ import gleam/httpc
 import gleam/json
 import gleam/list
 import gleam/result
-import gose/jwk
+import gose
+import gose/jose/jwk
 import kryptos/ec
 import kryptos/hash
 import kryptos/x509
@@ -112,7 +113,7 @@ pub fn generate_csr(domains: List(String)) -> BitArray {
   csr_der
 }
 
-pub fn generate_csr_with_key(domains: List(String)) -> #(BitArray, jwk.Jwk) {
+pub fn generate_csr_with_key(domains: List(String)) -> #(BitArray, jwk.Key) {
   let assert [first_domain, ..] = domains
 
   let #(private_key, _) = ec.generate_key_pair(ec.P256)
@@ -129,13 +130,13 @@ pub fn generate_csr_with_key(domains: List(String)) -> #(BitArray, jwk.Jwk) {
     csr.sign_with_ecdsa(builder, private_key, hash.Sha256)
 
   let assert Ok(pem) = ec.to_pem(private_key)
-  let assert Ok(cert_jwk) = jwk.from_pem(pem)
+  let assert Ok(cert_jwk) = gose.from_pem(pem)
 
   #(csr.to_der(signed_csr), cert_jwk)
 }
 
 pub fn generate_key() -> acumen.UnregisteredKey {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   acumen.UnregisteredKey(key)
 }
 

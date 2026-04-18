@@ -3,9 +3,9 @@ import acumen/url.{type Url}
 import gleam/bit_array
 import gleam/json
 import gleam/result
-import gose/jwa
-import gose/jwk.{type Jwk}
-import gose/jws
+import gose
+import gose/jose/jwk
+import gose/jose/jws
 import kryptos/ec
 
 pub fn sign_eab(
@@ -15,19 +15,19 @@ pub fn sign_eab(
   url url: Url,
 ) -> Result(json.Json, String) {
   use key <- result.try(
-    jwk.from_octet_bits(mac_key)
+    gose.from_octet_bits(mac_key)
     |> result.map_error(utils.gose_error_to_string),
   )
 
   let url = url.to_string(url)
-  jws.new(jwa.JwsHmac(jwa.HmacSha256))
+  jws.new(gose.Mac(gose.Hmac(gose.HmacSha256)))
   |> jws.with_kid(kid)
   |> set_header("url", json.string(url))
   |> result.try(sign_and_serialize(_, key, payload))
 }
 
 pub fn sign_key_change_inner(
-  new_key: Jwk,
+  new_key: jwk.Key,
   payload payload: String,
   url url: Url,
 ) -> Result(json.Json, String) {
@@ -41,7 +41,7 @@ pub fn sign_key_change_inner(
 }
 
 pub fn sign_with_jwk(
-  key: Jwk,
+  key: jwk.Key,
   payload payload: String,
   nonce nonce: String,
   url url: Url,
@@ -50,7 +50,7 @@ pub fn sign_with_jwk(
 }
 
 pub fn sign_with_kid(
-  key: Jwk,
+  key: jwk.Key,
   kid kid: Url,
   payload payload: String,
   nonce nonce: String,
@@ -62,26 +62,27 @@ pub fn sign_with_kid(
   })
 }
 
-fn algorithm_for_ec_key(key: Jwk) -> Result(jwa.JwsAlg, String) {
+fn algorithm_for_ec_key(key: jwk.Key) -> Result(gose.SigningAlg, String) {
   use curve <- result.try(
-    jwk.ec_curve(key)
+    gose.ec_curve(key)
     |> result.replace_error("failed to get EC curve"),
   )
 
   case curve {
-    ec.P256 -> Ok(jwa.JwsEcdsa(jwa.EcdsaP256))
-    ec.P384 -> Ok(jwa.JwsEcdsa(jwa.EcdsaP384))
-    ec.P521 -> Ok(jwa.JwsEcdsa(jwa.EcdsaP521))
+    ec.P256 -> Ok(gose.DigitalSignature(gose.Ecdsa(gose.EcdsaP256)))
+    ec.P384 -> Ok(gose.DigitalSignature(gose.Ecdsa(gose.EcdsaP384)))
+    ec.P521 -> Ok(gose.DigitalSignature(gose.Ecdsa(gose.EcdsaP521)))
     ec.Secp256k1 -> Error("Secp256k1 is not supported for ACME JWS signing")
   }
 }
 
-fn algorithm_for_key(key: Jwk) -> Result(jwa.JwsAlg, String) {
-  case jwk.key_type(key) {
-    jwk.EcKeyType -> algorithm_for_ec_key(key)
-    jwk.RsaKeyType -> Ok(jwa.JwsRsaPkcs1(jwa.RsaPkcs1Sha256))
-    jwk.OkpKeyType -> Ok(jwa.JwsEddsa)
-    jwk.OctKeyType -> Error("symmetric keys not supported for ACME")
+fn algorithm_for_key(key: jwk.Key) -> Result(gose.SigningAlg, String) {
+  case gose.key_type(key) {
+    gose.EcKeyType -> algorithm_for_ec_key(key)
+    gose.RsaKeyType ->
+      Ok(gose.DigitalSignature(gose.RsaPkcs1(gose.RsaPkcs1Sha256)))
+    gose.OkpKeyType -> Ok(gose.DigitalSignature(gose.Eddsa))
+    gose.OctKeyType -> Error("symmetric keys not supported for ACME")
   }
 }
 
@@ -96,7 +97,7 @@ fn set_header(
 
 fn sign_and_serialize(
   unsigned: jws.Jws(jws.Unsigned, jws.Built),
-  key: Jwk,
+  key: jwk.Key,
   payload: String,
 ) -> Result(json.Json, String) {
   jws.sign(unsigned, key, bit_array.from_string(payload))
@@ -105,7 +106,7 @@ fn sign_and_serialize(
 }
 
 fn sign_request(
-  key: Jwk,
+  key: jwk.Key,
   payload: String,
   nonce: String,
   url: Url,
@@ -125,10 +126,10 @@ fn sign_request(
 
 fn with_jwk_identity(
   unsigned: jws.Jws(jws.Unsigned, jws.Built),
-  key: Jwk,
+  key: jwk.Key,
 ) -> Result(jws.Jws(jws.Unsigned, jws.Built), String) {
   use public_key <- result.try(
-    jwk.public_key(key) |> result.map_error(utils.gose_error_to_string),
+    gose.public_key(key) |> result.map_error(utils.gose_error_to_string),
   )
   set_header(unsigned, "jwk", jwk.to_json(public_key))
 }

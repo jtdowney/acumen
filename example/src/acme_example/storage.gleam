@@ -6,7 +6,8 @@ import gleam/dynamic/decode
 import gleam/json
 import gleam/result
 import gleam/time/timestamp.{type Timestamp}
-import gose/jwk
+import gose
+import gose/jose/jwk
 import kryptos/ec
 import simplifile
 
@@ -60,7 +61,7 @@ pub fn write_certificate_files(
 }
 
 pub fn generate_account_key() -> acumen.UnregisteredKey {
-  jwk.generate_ec(ec.P256)
+  gose.generate_ec(ec.P256)
   |> acumen.UnregisteredKey
 }
 
@@ -91,7 +92,7 @@ pub fn load_account_key(
     |> result.replace_error(KeyCorrupted("invalid JSON or JWK format")),
   )
   use kid_string <- result.try(
-    jwk.kid(jwk_key)
+    gose.kid(jwk_key)
     |> result.replace_error(KeyCorrupted("missing kid in stored JWK")),
   )
   use kid <- result.try(
@@ -107,7 +108,7 @@ pub fn save_account_key(
 ) -> Result(Nil, StorageError) {
   let path = account_key_path(storage_path)
   let jwk_with_kid =
-    jwk.with_kid(registered_key.jwk, url.to_string(registered_key.kid))
+    gose.with_kid(registered_key.jwk, url.to_string(registered_key.kid))
   let json_string = json.to_string(jwk.to_json(jwk_with_kid))
   use _ <- result.try(ensure_directory(storage_path))
   use _ <- result.try(

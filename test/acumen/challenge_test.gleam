@@ -6,7 +6,8 @@ import gleam/list
 import gleam/option.{type Option}
 import gleam/string
 import gleam/time/timestamp.{type Timestamp}
-import gose/jwk
+import gose
+import gose/jose/jwk
 import kryptos/ec
 import kryptos/hash
 import qcheck
@@ -61,7 +62,7 @@ pub fn decodes_unknown_challenge_as_none_test() {
 }
 
 pub fn key_authorization_format_property_test() {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   let assert Ok(kid) = url.from_string("https://example.com/acct/1")
   let registered = acumen.RegisteredKey(jwk: key, kid: kid)
 
@@ -88,7 +89,7 @@ pub fn key_authorization_format_property_test() {
 }
 
 pub fn key_authorization_works_for_dns01_test() {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   let assert Ok(kid) = url.from_string("https://example.com/acct/1")
   let registered = acumen.RegisteredKey(jwk: key, kid: kid)
   let dns_challenge = make_challenge(challenge.Dns01Challenge)
@@ -102,7 +103,7 @@ pub fn key_authorization_works_for_dns01_test() {
 }
 
 pub fn key_authorization_works_for_dns_account01_test() {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   let assert Ok(kid) = url.from_string("https://example.com/acct/1")
   let registered = acumen.RegisteredKey(jwk: key, kid: kid)
   let dns_account_challenge = make_challenge(challenge.DnsAccount01Challenge)
@@ -116,7 +117,7 @@ pub fn key_authorization_works_for_dns_account01_test() {
 }
 
 pub fn key_authorization_works_for_tls_alpn01_test() {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   let assert Ok(kid) = url.from_string("https://example.com/acct/1")
   let registered = acumen.RegisteredKey(jwk: key, kid: kid)
   let tls_challenge = make_challenge(challenge.TlsAlpn01Challenge)
@@ -130,7 +131,7 @@ pub fn key_authorization_works_for_tls_alpn01_test() {
 }
 
 pub fn key_authorization_rejects_persist_challenge_test() {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   let assert Ok(kid) = url.from_string("https://example.com/acct/1")
   let registered = acumen.RegisteredKey(jwk: key, kid: kid)
   let persist = make_dns_persist01()

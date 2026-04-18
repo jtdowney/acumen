@@ -7,7 +7,7 @@ import acumen/rotate_key
 import acumen/update_account
 import acumen/url
 import gleam/string
-import gose/jwk
+import gose
 import integration/helpers
 import kryptos/ec
 import unitest
@@ -147,7 +147,7 @@ pub fn rotates_account_key_test() {
 
   let #(_account, old_registered_key, ctx) = helpers.setup_registered_account()
 
-  let new_key = jwk.generate_ec(ec.P256)
+  let new_key = gose.generate_ec(ec.P256)
 
   let change = rotate_key.request(new_key)
 
@@ -169,7 +169,7 @@ pub fn new_key_works_for_orders_test() {
 
   let #(_account, old_registered_key, ctx) = helpers.setup_registered_account()
 
-  let new_key = jwk.generate_ec(ec.P256)
+  let new_key = gose.generate_ec(ec.P256)
   let change = rotate_key.request(new_key)
 
   let assert Ok(#(resp, ctx)) =

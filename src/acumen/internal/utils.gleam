@@ -19,6 +19,7 @@ pub fn gose_error_to_string(err: gose.GoseError) -> String {
     gose.ParseError(msg) -> "parse error: " <> msg
     gose.CryptoError(msg) -> "crypto error: " <> msg
     gose.InvalidState(msg) -> "invalid state: " <> msg
+    gose.VerificationFailed -> "verification failed"
   }
 }
 

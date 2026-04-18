@@ -4,13 +4,13 @@ import birdie
 import gleam/dynamic/decode
 import gleam/json
 import gleam/result
-import gose/jwk
+import gose
 import kryptos/ec
 import kryptos/eddsa
 import support/fixtures
 
 pub fn sign_with_kid_protected_header_snapshot_test() {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   let assert Ok(kid) = url.from_string("https://example.com/acct/123")
   let payload = json.object([]) |> json.to_string
   let nonce = "test-nonce-value"
@@ -34,7 +34,7 @@ pub fn sign_with_kid_protected_header_snapshot_test() {
 }
 
 pub fn sign_with_jwk_has_correct_structure_test() {
-  let key = jwk.generate_ec(ec.P256)
+  let key = gose.generate_ec(ec.P256)
   let payload = json.object([]) |> json.to_string
   let nonce = "test-nonce-value"
   let assert Ok(url) = url.from_string("https://example.com/acme/new-account")
@@ -67,7 +67,7 @@ pub fn sign_with_jwk_has_correct_structure_test() {
 
 pub fn sign_with_jwk_rejects_symmetric_key_test() {
   let mac_key = <<1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16>>
-  let assert Ok(key) = jwk.from_octet_bits(mac_key)
+  let assert Ok(key) = gose.from_octet_bits(mac_key)
 
   let assert Ok(url) = url.from_string("https://example.com/url")
   let assert Error(_) =
@@ -107,7 +107,7 @@ pub fn sign_eab_creates_valid_jws_structure_test() {
 }
 
 pub fn sign_key_change_inner_has_no_nonce_test() {
-  let new_key = jwk.generate_ec(ec.P256)
+  let new_key = gose.generate_ec(ec.P256)
   let payload = json.object([]) |> json.to_string
   let assert Ok(url) = url.from_string("https://example.com/acme/key-change")
 
@@ -134,7 +134,7 @@ pub fn sign_key_change_inner_has_no_nonce_test() {
 
 pub fn sign_with_kid_rejects_symmetric_key_test() {
   let mac_key = <<1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16>>
-  let assert Ok(key) = jwk.from_octet_bits(mac_key)
+  let assert Ok(key) = gose.from_octet_bits(mac_key)
   let assert Ok(kid) = url.from_string("https://example.com/acct/123")
   let assert Ok(url) = url.from_string("https://example.com/acme/test")
   let assert Error(_) =
@@ -165,7 +165,7 @@ fn extract_alg(signed: String) -> String {
 }
 
 pub fn sign_with_jwk_ec_p384_selects_es384_test() {
-  let key = jwk.generate_ec(ec.P384)
+  let key = gose.generate_ec(ec.P384)
   let assert Ok(url) = url.from_string("https://example.com/acme/test")
 
   let assert Ok(signed) =
@@ -174,7 +174,7 @@ pub fn sign_with_jwk_ec_p384_selects_es384_test() {
 }
 
 pub fn sign_with_jwk_ec_p521_selects_es512_test() {
-  let key = jwk.generate_ec(ec.P521)
+  let key = gose.generate_ec(ec.P521)
   let assert Ok(url) = url.from_string("https://example.com/acme/test")
 
   let assert Ok(signed) =
@@ -192,7 +192,7 @@ pub fn sign_with_jwk_rsa_selects_rs256_test() {
 }
 
 pub fn sign_with_jwk_rejects_secp256k1_test() {
-  let key = jwk.generate_ec(ec.Secp256k1)
+  let key = gose.generate_ec(ec.Secp256k1)
   let assert Ok(url) = url.from_string("https://example.com/acme/test")
 
   let assert Error(_) =
@@ -200,7 +200,7 @@ pub fn sign_with_jwk_rejects_secp256k1_test() {
 }
 
 pub fn sign_with_jwk_eddsa_selects_eddsa_test() {
-  let key = jwk.generate_eddsa(eddsa.Ed25519)
+  let key = gose.generate_eddsa(eddsa.Ed25519)
   let assert Ok(url) = url.from_string("https://example.com/acme/test")
 
   let assert Ok(signed) =

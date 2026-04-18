@@ -17,7 +17,7 @@
 //// import acumen/register_account
 //// import gleam/http/request
 //// import gleam/httpc
-//// import gose/jwk
+//// import gose/key
 //// import kryptos/ec
 ////
 //// pub fn main() {
@@ -33,7 +33,7 @@
 ////
 ////   // 3. Create context and account key
 ////   let ctx = acumen.Context(directory:, nonce: initial_nonce)
-////   let key = jwk.generate_ec(ec.P256)
+////   let key = key.generate_ec(ec.P256)
 ////   let unregistered = acumen.UnregisteredKey(key)
 ////
 ////   // 4. Register an account
@@ -69,7 +69,7 @@ import gleam/result
 import gleam/string
 import gleam/time/timestamp.{type Timestamp}
 import gleam/uri.{type Uri}
-import gose/jwk.{type Jwk}
+import gose/jose/jwk
 
 /// Library version used in User-Agent header.
 pub const version = constants.version
@@ -240,7 +240,7 @@ pub type Identifier {
 /// The `RegisteredKey` is returned by `register_account.response` after a
 /// successful account registration.
 pub type RegisteredKey {
-  RegisteredKey(jwk: Jwk, kid: Url)
+  RegisteredKey(jwk: jwk.Key, kid: Url)
 }
 
 /// Parsed Retry-After header value.
@@ -267,14 +267,14 @@ pub type Subproblem {
 /// ## Example
 ///
 /// ```gleam
-/// import gose/jwk
+/// import gose/key
 /// import kryptos/ec
 ///
-/// let key = jwk.generate_ec(ec.P256)
+/// let key = key.generate_ec(ec.P256)
 /// let unregistered = acumen.UnregisteredKey(key)
 /// ```
 pub type UnregisteredKey {
-  UnregisteredKey(jwk: Jwk)
+  UnregisteredKey(jwk: jwk.Key)
 }
 
 /// Parses an ACME directory response.

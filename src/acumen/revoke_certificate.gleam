@@ -32,7 +32,7 @@ import gleam/http/response.{type Response}
 import gleam/json
 import gleam/option.{type Option}
 import gleam/result
-import gose/jwk.{type Jwk}
+import gose/jose/jwk
 
 /// Request builder for certificate revocation.
 ///
@@ -130,9 +130,9 @@ fn reason_to_code(revocation_reason: RevocationReason) -> Int {
 /// ```gleam
 /// import acumen
 /// import acumen/revoke_certificate
-/// import gose/jwk
+/// import gose/key
 ///
-/// let assert Ok(cert_private_key) = jwk.from_pem(cert_key_pem)
+/// let assert Ok(cert_private_key) = key.from_pem(cert_key_pem)
 ///
 /// let req = revoke_certificate.request(cert_der_bytes)
 ///   |> revoke_certificate.reason(revoke_certificate.KeyCompromise)
@@ -152,7 +152,7 @@ fn reason_to_code(revocation_reason: RevocationReason) -> Int {
 pub fn build_with_certificate_key(
   builder: RequestBuilder,
   context: acumen.Context,
-  key key: Jwk,
+  key key: jwk.Key,
 ) -> Result(Request(String), acumen.AcmeError) {
   build_payload(builder)
   |> json.to_string

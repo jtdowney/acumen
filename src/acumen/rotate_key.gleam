@@ -8,11 +8,11 @@
 //// ```gleam
 //// import acumen
 //// import acumen/rotate_key
-//// import gose/jwk
+//// import gose/key
 //// import kryptos/ec
 ////
 //// // Generate a new key to rotate to
-//// let new_key = jwk.generate_ec(ec.P256)
+//// let new_key = key.generate_ec(ec.P256)
 ////
 //// // Build and execute the key change request
 //// let change = rotate_key.request(new_key)
@@ -36,13 +36,14 @@ import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 import gleam/json
 import gleam/result
-import gose/jwk.{type Jwk}
+import gose
+import gose/jose/jwk
 
 /// Request builder for key rotation.
 ///
 /// Use `request` to create a builder with the new key, then call `build`.
 pub opaque type RequestBuilder {
-  RequestBuilder(new_key: Jwk)
+  RequestBuilder(new_key: jwk.Key)
 }
 
 /// Builds the HTTP request for key rotation.
@@ -68,12 +69,12 @@ pub fn build(
 }
 
 fn build_inner(
-  new_key: Jwk,
+  new_key: jwk.Key,
   old_key: acumen.RegisteredKey,
   url: Url,
 ) -> Result(json.Json, String) {
   use old_public_key <- result.try(
-    jwk.public_key(old_key.jwk)
+    gose.public_key(old_key.jwk)
     |> result.map_error(utils.gose_error_to_string),
   )
 
@@ -86,7 +87,7 @@ fn build_inner(
 }
 
 /// Creates a new key rotation request builder wrapping the replacement key.
-pub fn request(new_key: Jwk) -> RequestBuilder {
+pub fn request(new_key: jwk.Key) -> RequestBuilder {
   RequestBuilder(new_key: new_key)
 }
 
@@ -96,7 +97,7 @@ pub fn request(new_key: Jwk) -> RequestBuilder {
 /// account URL.
 pub fn response(
   resp: Response(String),
-  new_key new_key: Jwk,
+  new_key new_key: jwk.Key,
   old_key old_key: acumen.RegisteredKey,
 ) -> Result(acumen.RegisteredKey, acumen.AcmeError) {
   case resp.status {

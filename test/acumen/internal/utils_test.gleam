@@ -88,6 +88,11 @@ pub fn gose_error_to_string_invalid_state_test() {
     == "invalid state: wrong state"
 }
 
+pub fn gose_error_to_string_verification_failed_test() {
+  assert utils.gose_error_to_string(gose.VerificationFailed)
+    == "verification failed"
+}
+
 pub fn uri_decoder_rejects_missing_scheme_test() {
   let result =
     decode.run(dynamic.string("//example.com/path"), utils.uri_decoder())

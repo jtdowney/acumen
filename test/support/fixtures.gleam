@@ -10,7 +10,8 @@ import gleam/list
 import gleam/option.{type Option}
 import gleam/result
 import gleam/uri
-import gose/jwk.{type Jwk}
+import gose
+import gose/jose/jwk
 import kryptos/ec
 import kryptos/rsa
 import simplifile
@@ -20,8 +21,8 @@ fn rsa_2048_pem() -> String {
   pem
 }
 
-pub fn test_rsa_jwk() -> Jwk {
-  let assert Ok(key) = jwk.from_pem(rsa_2048_pem())
+pub fn test_rsa_jwk() -> jwk.Key {
+  let assert Ok(key) = gose.from_pem(rsa_2048_pem())
   key
 }
 
@@ -30,8 +31,8 @@ pub fn test_rsa_key_pair() -> #(rsa.PrivateKey, rsa.PublicKey) {
   pair
 }
 
-pub fn test_ec_key() -> Jwk {
-  jwk.generate_ec(ec.P256)
+pub fn test_ec_key() -> jwk.Key {
+  gose.generate_ec(ec.P256)
 }
 
 pub fn test_registered_key() -> acumen.RegisteredKey {
