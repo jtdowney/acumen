@@ -179,8 +179,7 @@ fn make_challenge(
     String,
     Option(Timestamp),
     Option(acumen.AcmeError),
-  ) ->
-    Challenge,
+  ) -> Challenge,
 ) -> Challenge {
   let assert Ok(chall_url) = url.from_string("https://example.com/chall")
   constructor(chall_url, challenge.Pending, "token", option.None, option.None)

@@ -77,7 +77,9 @@ pub fn build(
 ///   }
 /// }
 /// ```
-pub fn response(resp: Response(String)) -> Result(OrdersList, acumen.AcmeError) {
+pub fn response(
+  resp: Response(String),
+) -> Result(OrdersList, acumen.AcmeError) {
   case resp.status {
     200 -> parse_orders_response(resp)
     _ ->

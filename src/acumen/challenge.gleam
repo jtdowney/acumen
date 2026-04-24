@@ -318,8 +318,7 @@ fn standard_challenge_decoder(
     String,
     Option(Timestamp),
     Option(acumen.AcmeError),
-  ) ->
-    Challenge,
+  ) -> Challenge,
 ) -> decode.Decoder(Challenge) {
   use url <- decode.field("url", url.decoder())
   use status <- decode.field("status", status_decoder())

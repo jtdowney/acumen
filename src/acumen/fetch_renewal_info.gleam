@@ -76,7 +76,9 @@ pub fn build(
 }
 
 /// Parses a renewal information response.
-pub fn response(resp: Response(String)) -> Result(RenewalInfo, acumen.AcmeError) {
+pub fn response(
+  resp: Response(String),
+) -> Result(RenewalInfo, acumen.AcmeError) {
   case resp.status {
     200 ->
       json.parse(resp.body, renewal_info.decoder())

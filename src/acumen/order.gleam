@@ -82,7 +82,10 @@ pub type Status {
 /// let #(private_key, _public_key) = ec.generate_key_pair(ec.P256)
 /// let assert Ok(csr_der) = order.to_ec_csr(ready_order, private_key)
 /// ```
-pub fn to_ec_csr(order: Order, key: ec.PrivateKey) -> Result(BitArray, CsrError) {
+pub fn to_ec_csr(
+  order: Order,
+  key: ec.PrivateKey,
+) -> Result(BitArray, CsrError) {
   use builder <- result.try(build_csr_builder(order))
   let hash_algorithm = hash_for_ec_curve(ec.curve(key))
   csr.sign_with_ecdsa(builder, key, hash_algorithm)

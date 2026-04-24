@@ -130,7 +130,9 @@ pub fn identifiers_json(identifiers: List(acumen.Identifier)) -> json.Json {
   json.array(identifiers, identifier_json)
 }
 
-pub fn minimal_order_fields(domains: List(String)) -> List(#(String, json.Json)) {
+pub fn minimal_order_fields(
+  domains: List(String),
+) -> List(#(String, json.Json)) {
   minimal_order_fields_with_status(domains, "pending")
 }
 

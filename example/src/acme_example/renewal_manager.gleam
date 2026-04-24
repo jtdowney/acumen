@@ -94,7 +94,10 @@ fn start(
   |> actor.start
 }
 
-fn handle_message(state: State, message: Message) -> actor.Next(State, Message) {
+fn handle_message(
+  state: State,
+  message: Message,
+) -> actor.Next(State, Message) {
   case message {
     Initialize -> handle_initialize(state)
     CheckRenewalInfo -> handle_check_renewal_info(state)
@@ -408,7 +411,10 @@ fn schedule_renewal(state: State) -> State {
   }
 }
 
-fn fetch_ari(directory_url: String, cert_path: String) -> Result(AriResult, Nil) {
+fn fetch_ari(
+  directory_url: String,
+  cert_path: String,
+) -> Result(AriResult, Nil) {
   use req <- result.try(request.to(directory_url))
   use resp <- result.try(
     httpc.send(req)

@@ -719,7 +719,10 @@ fn get_nonce(directory: acumen.Directory) -> Result(String, AcmeClientError) {
   |> result.map_error(AcmeError)
 }
 
-fn log_renewal_info(directory: acumen.Directory, certificate_pem: String) -> Nil {
+fn log_renewal_info(
+  directory: acumen.Directory,
+  certificate_pem: String,
+) -> Nil {
   let result = {
     use cert_id <- result.try(
       certificate.cert_id_from_pem(certificate_pem)

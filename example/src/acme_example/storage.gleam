@@ -23,7 +23,10 @@ pub fn ensure_directory(path: String) -> Result(Nil, StorageError) {
   |> result.map_error(FileError)
 }
 
-pub fn write_certificate(path: String, pem: String) -> Result(Nil, StorageError) {
+pub fn write_certificate(
+  path: String,
+  pem: String,
+) -> Result(Nil, StorageError) {
   simplifile.write(path, pem)
   |> result.map_error(FileError)
 }
