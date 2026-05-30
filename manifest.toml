@@ -45,7 +45,7 @@ packages = [
   { name = "tobble", version = "2.0.2", build_tools = ["gleam"], requirements = ["gleam_stdlib", "gleam_yielder", "string_width"], otp_app = "tobble", source = "hex", outer_checksum = "95E7656A560964E4627ADD148675FB5808F8F5D262CAB1DF0F6375B85487CDBA" },
   { name = "tom", version = "2.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib", "gleam_time"], otp_app = "tom", source = "hex", outer_checksum = "DCF04CB7AB35D58CFC598C66EA2E1816D160759802C89B2BA6238780D59BC256" },
   { name = "trie_again", version = "1.1.4", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "trie_again", source = "hex", outer_checksum = "E3BD66B4E126EF567EA8C4944EAB216413392ADF6C16C36047AF79EE5EF13466" },
-  { name = "unitest", version = "1.5.0", build_tools = ["gleam"], requirements = ["argv", "clip", "envoy", "glance", "gleam_community_ansi", "gleam_stdlib", "gleam_time", "prng", "simplifile", "spinner", "tobble"], otp_app = "unitest", source = "hex", outer_checksum = "8F626975864030765ED0D86A379B25DB592F82276EDAA98B1F0A0D7552204F54" },
+  { name = "unitest", version = "1.6.0", build_tools = ["gleam"], requirements = ["argv", "clip", "envoy", "glance", "gleam_community_ansi", "gleam_stdlib", "gleam_time", "prng", "simplifile", "spinner", "tobble"], otp_app = "unitest", source = "hex", outer_checksum = "1743ED721F7CFF13CB06B359B1C20ADD74AB39AFE0CDF404526ABC2B0DB69C2B" },
 ]
 
 [requirements]
