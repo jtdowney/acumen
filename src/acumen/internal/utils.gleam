@@ -49,13 +49,13 @@ pub fn parse_http_date(value: String) -> Result(Timestamp, Nil) {
   case string.split(value, " ") {
     [_, day_str, month_str, year_str, time_str, ..] -> {
       use day <- result.try(int.parse(day_str))
-      use <- bool.guard(day < 1 || day > 31, Error(Nil))
+      use <- bool.guard(when: day < 1 || day > 31, return: Error(Nil))
       use month <- result.try(parse_month(month_str))
       use year <- result.try(int.parse(year_str))
       use #(hours, minutes, seconds) <- result.try(parse_time(time_str))
-      use <- bool.guard(hours < 0 || hours > 23, Error(Nil))
-      use <- bool.guard(minutes < 0 || minutes > 59, Error(Nil))
-      use <- bool.guard(seconds < 0 || seconds > 59, Error(Nil))
+      use <- bool.guard(when: hours < 0 || hours > 23, return: Error(Nil))
+      use <- bool.guard(when: minutes < 0 || minutes > 59, return: Error(Nil))
+      use <- bool.guard(when: seconds < 0 || seconds > 59, return: Error(Nil))
       Ok(timestamp.from_calendar(
         date: calendar.Date(year:, month:, day:),
         time: calendar.TimeOfDay(hours:, minutes:, seconds:, nanoseconds: 0),
