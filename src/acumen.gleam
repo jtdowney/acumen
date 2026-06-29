@@ -56,6 +56,7 @@ import acumen/internal/constants
 import acumen/internal/jws
 import acumen/internal/utils
 import acumen/url.{type Url}
+import fixdate
 import gleam/dict.{type Dict}
 import gleam/dynamic/decode
 import gleam/http
@@ -556,7 +557,7 @@ pub fn retry_after(resp: Response(body)) -> Result(RetryAfter, Nil) {
   use value <- result.try(response.get_header(resp, "retry-after"))
   case int.parse(value) {
     Error(_) ->
-      utils.parse_http_date(value)
+      fixdate.parse(value)
       |> result.map(RetryAfterTimestamp)
     Ok(seconds) if seconds >= 0 -> Ok(RetryAfterSeconds(seconds))
     Ok(_) -> Error(Nil)

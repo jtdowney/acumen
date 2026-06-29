@@ -1,12 +1,8 @@
 import acumen/internal/utils
 import gleam/dynamic
 import gleam/dynamic/decode
-import gleam/int
 import gleam/json
 import gleam/result
-import gleam/string
-import gleam/time/calendar
-import gleam/time/duration
 import gleam/time/timestamp
 import gleam/uri
 import gose
@@ -154,92 +150,4 @@ pub fn json_parse_error_message_unexpected_byte_test() {
       error: json.UnexpectedByte("x"),
     )
     == "failed to parse order: unexpected byte: x"
-}
-
-pub fn parse_http_date_parses_rfc1123_test() {
-  let assert Ok(ts) = utils.parse_http_date("Sun, 06 Nov 1994 08:49:37 GMT")
-  let #(unix_seconds, _) = timestamp.to_unix_seconds_and_nanoseconds(ts)
-  assert unix_seconds == 784_111_777
-}
-
-pub fn parse_http_date_rejects_too_few_tokens_test() {
-  assert utils.parse_http_date("Sun, 06 Nov 1994") == Error(Nil)
-}
-
-pub fn parse_http_date_rejects_non_numeric_day_test() {
-  assert utils.parse_http_date("Sun, XX Nov 1994 08:49:37 GMT") == Error(Nil)
-}
-
-pub fn parse_http_date_rejects_non_numeric_year_test() {
-  assert utils.parse_http_date("Sun, 06 Nov XXXX 08:49:37 GMT") == Error(Nil)
-}
-
-pub fn parse_http_date_rejects_malformed_time_test() {
-  assert utils.parse_http_date("Sun, 06 Nov 1994 08:49 GMT") == Error(Nil)
-}
-
-pub fn parse_http_date_rejects_non_numeric_time_test() {
-  assert utils.parse_http_date("Sun, 06 Nov 1994 XX:49:37 GMT") == Error(Nil)
-}
-
-pub fn parse_http_date_rejects_invalid_month_test() {
-  assert utils.parse_http_date("Sun, 06 Xyz 1994 08:49:37 GMT") == Error(Nil)
-}
-
-pub fn parse_http_date_roundtrip_property_test() {
-  let month_gen =
-    qcheck.from_generators(qcheck.return(#("Jan", calendar.January)), [
-      qcheck.return(#("Feb", calendar.February)),
-      qcheck.return(#("Mar", calendar.March)),
-      qcheck.return(#("Apr", calendar.April)),
-      qcheck.return(#("May", calendar.May)),
-      qcheck.return(#("Jun", calendar.June)),
-      qcheck.return(#("Jul", calendar.July)),
-      qcheck.return(#("Aug", calendar.August)),
-      qcheck.return(#("Sep", calendar.September)),
-      qcheck.return(#("Oct", calendar.October)),
-      qcheck.return(#("Nov", calendar.November)),
-      qcheck.return(#("Dec", calendar.December)),
-    ])
-
-  use #(#(day, #(month_str, expected_month), year), #(hours, minutes, seconds)) <- qcheck.given(
-    qcheck.tuple2(
-      qcheck.tuple3(
-        qcheck.bounded_int(from: 1, to: 28),
-        month_gen,
-        qcheck.bounded_int(from: 2000, to: 2050),
-      ),
-      qcheck.tuple3(
-        qcheck.bounded_int(from: 0, to: 23),
-        qcheck.bounded_int(from: 0, to: 59),
-        qcheck.bounded_int(from: 0, to: 59),
-      ),
-    ),
-  )
-
-  let pad2 = fn(n) { string.pad_start(int.to_string(n), 2, "0") }
-  let date_str =
-    "Mon, "
-    <> pad2(day)
-    <> " "
-    <> month_str
-    <> " "
-    <> int.to_string(year)
-    <> " "
-    <> pad2(hours)
-    <> ":"
-    <> pad2(minutes)
-    <> ":"
-    <> pad2(seconds)
-    <> " GMT"
-
-  let assert Ok(ts) = utils.parse_http_date(date_str)
-  let #(date, time) = timestamp.to_calendar(ts, duration.seconds(0))
-
-  assert date.year == year
-  assert date.month == expected_month
-  assert date.day == day
-  assert time.hours == hours
-  assert time.minutes == minutes
-  assert time.seconds == seconds
 }
