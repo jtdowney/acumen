@@ -27,9 +27,9 @@ gleam run -- --domain example.com --email you@example.com
 | `--directory`      | Let's Encrypt staging | ACME directory URL                                                      |
 | `--http-port`      | `80`                  | Port for the HTTP-01 challenge server                                   |
 | `--https-port`     | `443`                 | Port for the TLS server                                                 |
-| `--storage-path`   | `priv/storage`        | Directory for persistent account/order data                             |
-| `--cert-path`      | `priv/cert.pem`       | Output path for the certificate chain                                   |
-| `--key-path`       | `priv/key.pem`        | Output path for the certificate private key                             |
+| `--storage-path`   | `./data/storage`      | Directory for persistent account/order data                             |
+| `--cert-path`      | `./data/cert.pem`     | Output path for the certificate chain                                   |
+| `--key-path`       | `./data/key.pem`      | Output path for the certificate private key                             |
 | `--profile`        | _(none)_              | Certificate profile to request                                          |
 | `--challenge-type` | `http-01`             | Challenge type: `http-01`, `dns-01`, `dns-account-01`, `dns-persist-01` |
 | `--eab-key-id`     | _(none)_              | EAB key ID from the CA (requires `--eab-mac-key`)                       |

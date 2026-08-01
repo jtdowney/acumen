@@ -9,16 +9,13 @@ import argv
 import clip
 import clip/help
 import clip/opt
-import filepath
 import gleam/bit_array
-import gleam/erlang/application
 import gleam/erlang/process
 import gleam/int
 import gleam/io
 import gleam/option
 import gleam/otp/actor
 import gleam/otp/static_supervisor as supervisor
-import gleam/result
 import gleam/string
 import wisp
 
@@ -35,20 +32,14 @@ pub fn main() -> Nil {
 }
 
 fn run_cli(argv: argv.Argv) -> Result(acme_client.Config, String) {
-  use command <- result.try(cli())
   clip.help(
-    command,
+    cli(),
     help.simple("acme_example", "ACME certificate issuance example"),
   )
   |> clip.run(argv.arguments)
 }
 
-fn cli() -> Result(clip.Command(acme_client.Config), String) {
-  use priv_directory <- result.try(
-    application.priv_directory("acme_example")
-    |> result.replace_error("could not find priv directory for acme_example"),
-  )
-
+fn cli() -> clip.Command(acme_client.Config) {
   clip.command({
     use domain <- clip.parameter
     use email <- clip.parameter
@@ -103,17 +94,17 @@ fn cli() -> Result(clip.Command(acme_client.Config), String) {
   )
   |> clip.opt(
     opt.new("storage-path")
-    |> opt.default(filepath.join(priv_directory, "storage"))
+    |> opt.default("./data/storage")
     |> opt.help("Storage directory for persistent data"),
   )
   |> clip.opt(
     opt.new("cert-path")
-    |> opt.default(filepath.join(priv_directory, "cert.pem"))
+    |> opt.default("./data/cert.pem")
     |> opt.help("Output path for certificate"),
   )
   |> clip.opt(
     opt.new("key-path")
-    |> opt.default(filepath.join(priv_directory, "key.pem"))
+    |> opt.default("./data/key.pem")
     |> opt.help("Output path for private key"),
   )
   |> clip.opt(
@@ -139,7 +130,6 @@ fn cli() -> Result(clip.Command(acme_client.Config), String) {
     |> opt.optional
     |> opt.help("EAB MAC key, base64url-encoded (requires --eab-key-id)"),
   )
-  |> Ok
 }
 
 fn run_with_config(config: acme_client.Config) {
