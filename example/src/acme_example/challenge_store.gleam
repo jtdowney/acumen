@@ -2,10 +2,11 @@ import gleam/dict.{type Dict}
 import gleam/erlang/process
 import gleam/otp/actor
 import gleam/otp/supervision
+import snag.{type Result}
 
 pub type Message {
   Store(token: String, key_authorization: String)
-  Lookup(token: String, reply: process.Subject(Result(String, Nil)))
+  Lookup(token: String, reply: process.Subject(Result(String)))
 }
 
 pub fn child(
@@ -34,7 +35,7 @@ pub fn store(
 pub fn lookup(
   store: process.Subject(Message),
   token: String,
-) -> Result(String, Nil) {
+) -> Result(String) {
   process.call(store, waiting: 5000, sending: Lookup(token, _))
 }
 
@@ -48,7 +49,11 @@ fn handle_message(
       actor.continue(new_state)
     }
     Lookup(token, reply) -> {
-      process.send(reply, dict.get(state, token))
+      process.send(
+        reply,
+        dict.get(state, token)
+          |> snag.replace_error("Challenge token not found"),
+      )
       actor.continue(state)
     }
   }

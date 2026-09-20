@@ -21,6 +21,7 @@ import gleam/time/calendar
 import gleam/time/duration
 import gleam/time/timestamp.{type Timestamp}
 import mist
+import snag.{type Result}
 import wisp
 import wisp/wisp_mist
 
@@ -154,8 +155,15 @@ fn handle_renew(state: State) -> actor.Next(State, Message) {
   }
 }
 
-fn handle_renew_error(state: State, err: String) -> actor.Next(State, Message) {
-  io.println_error("ACME workflow failed: " <> err)
+fn handle_renew_error(
+  state: State,
+  err: snag.Snag,
+) -> actor.Next(State, Message) {
+  err
+  |> snag.layer("Renewal failed")
+  |> snag.pretty_print()
+  |> io.println_error()
+
   let attempt = state.retry_attempt
   case attempt >= max_renewal_retries {
     True -> {
@@ -200,18 +208,16 @@ fn handle_mist_down(state: State) -> actor.Next(State, Message) {
   }
 }
 
-fn run_acme(state: State) -> Result(Nil, String) {
+fn run_acme(state: State) -> Result(Nil) {
   let replaces =
     certificate.read_cert_id(state.config.cert_path)
     |> option.from_result
 
   acme_client.run(acme_client.Config(..state.config, replaces:), state.store)
-  |> result.map_error(fn(err) { string.inspect(err) })
+  |> snag.map_error(string.inspect)
 }
 
-fn start_mist(
-  state: State,
-) -> Result(#(State, process.Monitor), actor.StartError) {
+fn start_mist(state: State) -> Result(#(State, process.Monitor)) {
   let handler =
     handle_https_request
     |> wisp_mist.handler(wisp.random_string(64))
@@ -232,6 +238,7 @@ fn start_mist(
       monitor,
     )
   })
+  |> snag.replace_error("Failed to start HTTPS server")
 }
 
 fn stop_mist(state: State) -> State {
@@ -411,30 +418,34 @@ fn schedule_renewal(state: State) -> State {
   }
 }
 
-fn fetch_ari(
-  directory_url: String,
-  cert_path: String,
-) -> Result(AriResult, Nil) {
-  use req <- result.try(request.to(directory_url))
+fn fetch_ari(directory_url: String, cert_path: String) -> Result(AriResult) {
+  use req <- result.try(
+    request.to(directory_url)
+    |> snag.replace_error("Failed to build request for directory"),
+  )
   use resp <- result.try(
     httpc.send(req)
-    |> result.replace_error(Nil),
+    |> snag.replace_error("Failed to fetch directory from ACME server"),
   )
   use directory <- result.try(
     acumen.directory(resp)
-    |> result.replace_error(Nil),
+    |> snag.replace_error("Failed to parse directory from ACME server response"),
   )
   use cert_id <- result.try(
     certificate.read_cert_id(cert_path)
-    |> result.replace_error(Nil),
+    |> snag.replace_error("Failed to read certificate ID from certificate file"),
   )
   use ari_req <- result.try(
     fetch_renewal_info.build(directory, cert_id)
-    |> result.replace_error(Nil),
+    |> snag.replace_error(
+      "Failed to build request for ACME Renewal Information (ARI)",
+    ),
   )
   use ari_resp <- result.try(
     httpc.send(ari_req)
-    |> result.replace_error(Nil),
+    |> snag.replace_error(
+      "Failed to fetch ACME Renewal Information (ARI) from ACME server",
+    ),
   )
   let retry_after = case acumen.retry_after(ari_resp) {
     Ok(acumen.RetryAfterSeconds(seconds)) -> duration.seconds(seconds)
@@ -444,7 +455,9 @@ fn fetch_ari(
   }
 
   fetch_renewal_info.response(ari_resp)
-  |> result.replace_error(Nil)
+  |> snag.replace_error(
+    "Failed to parse ACME Renewal Information (ARI) from ACME server response",
+  )
   |> result.map(AriResult(cert_id, _, retry_after))
 }
 
@@ -532,10 +545,10 @@ fn log_ari_schedule(
   )
 }
 
-fn compute_renewal_delay(cert_path: String) -> Result(duration.Duration, Nil) {
+fn compute_renewal_delay(cert_path: String) -> Result(duration.Duration) {
   let now = timestamp.system_time()
   certificate.time_until_renewal(cert_path, now)
-  |> result.replace_error(Nil)
+  |> snag.replace_error("Failed to compute time until renewal from certificate")
 }
 
 fn renewal_backoff_ms(attempt: Int) -> Int {

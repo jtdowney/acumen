@@ -19,7 +19,8 @@ import gleam/otp/static_supervisor as supervisor
 import gleam/string
 import wisp
 
-const lets_encrypt_staging = "https://acme-staging-v02.api.letsencrypt.org/directory"
+const lets_encrypt_staging =
+  "https://acme-staging-v02.api.letsencrypt.org/directory"
 
 pub fn main() -> Nil {
   case run_cli(argv.load()) {

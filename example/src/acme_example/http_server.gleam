@@ -59,6 +59,6 @@ fn handle_challenge(
       wisp.ok()
       |> wisp.string_body(key_auth)
     }
-    Error(Nil) -> wisp.not_found()
+    Error(_) -> wisp.not_found()
   }
 }
